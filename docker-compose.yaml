@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.8.3 # Docker image
+    container_name: kafka
+    ports:
+      - "9092:9092"
+
+    environment:
+      KAFKA_KRAFT_MODE: 'true' # To activate Kraft
+
+      CLUSTER_ID: '1L6g7nGhU-eAKfL--X25wo' # Unique Id given to cluster in kafka
+      KAFKA_NODE_ID: 1 # ID of kafka nodes in the cluster it can be multi
+
+      KAFKA_PROCESS_ROLES: broker,controller # Roles available to kafka nodes. In Kraft it can be noth broker or controller or either one
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 # No. of nodes to vote for the controller
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # No. of backups available for the metadata
+
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093 # Who can access or share data
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092 # If you want to reach out the server use this link
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER # Who controls the flow of the data we can also use //0.0.0.0:9093 in place
+
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+
+    volumes:
+      - kafka_kraft:/var/lib/kafka/data
+
+volumes:
+  kafka_kraft:
